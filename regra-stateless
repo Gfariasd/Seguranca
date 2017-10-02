@@ -5,18 +5,26 @@ iptables -t mangle -F
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
-
+#Bloquear todas as cadeias.
 iptables -t filter -P INPUT DROP
 iptables -t filter -P FORWARD DROP
 iptables -t filter -P OUTPUT DROP
 #########################################Regra##########################
 
-
+#liberar acesso da rede interna apenas por ssh,http,dns,snmp,ping e ftp
 iptables -t filter -A INPUT -p tcp --dport 222 -j ACCEPT
-iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
-iptables -t filter -A INPUT -p udp --dport 161 -j ACCEPT
-iptables -t filter -A INPUT -p tcp --dport 20:21 -j ACCEPT
+iptables -t filter -A OUTPUT -p tcp --sport 222 -j ACCEPT
 
+iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
+iptables -t filter -A OUTPUT -p udp --sport 53 -j ACCEPT
+
+iptables -t filter -A INPUT -p udp --dport 161 -j ACCEPT
+iptables -t filter -A OUTPUT -p udp --sport 161 -j ACCEPT
+
+iptables -t filter -A INPUT -p tcp -m multiport --dport 20:21 -j ACCEPT
+iptables -t filter -A OUTPUT -p tcp -m multiport --sport 20:21 -j ACCEPT
+
+#Liberar o servidor pingar.
 iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
 
 iptables -t filter -A FORWARD -p icmp -d 200.221.2.45 -j ACCEPT
