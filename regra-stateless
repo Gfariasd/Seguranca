@@ -4,6 +4,7 @@ iptables -t nat -F
 iptables -t mangle -F
  		 	
 echo 1 > /proc/sys/net/ipv4/ip_forward
+
 iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
 #Bloquear todas as cadeias.
 iptables -t filter -P INPUT DROP
@@ -14,7 +15,7 @@ iptables -t filter -P OUTPUT DROP
 
 #liberar acesso da rede interna apenas por ssh,http,dns,snmp,ping e ftp
   #liberando acesso via ssh para o servidor.
-  iptables -t filter -A INPUT -i eth0-p tcp --dport 222 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0- p tcp --dport 222 -j ACCEPT
   iptables -t filter -A OUTPUT -o eth0 -p tcp --sport 222 -j ACCEPT
   
   #Liberando o acesso http da rede interna para o servidor.
@@ -74,3 +75,9 @@ iptables -t filter -P OUTPUT DROP
  
  #Registrar em log qualquer acesso da rede interna que não seja de navegação.
   iptables -t filter -A FORWARD -i eth0 !-p tcp -m --dport 88,443 -j LOG
+  
+  #Regras NAT
+  
+  #A saida da porta 25 será pelo IP 172.16.2.52
+  iptables -t nat -A  PREROUTING -i eth0 -p tcp --dport 25
+  
