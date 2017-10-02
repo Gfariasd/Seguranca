@@ -1,0 +1,35 @@
+#!/bin/bash
+iptables -t filter -F
+iptables -t nat -F
+iptables -t mangle -F
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
+
+iptables -t filter -P INPUT DROP
+iptables -t filter -P FORWARD DROP
+iptables -t filter -P OUTPUT DROP
+#########################################Regra##########################
+
+
+iptables -t filter -A INPUT -p tcp --dport 222 -j ACCEPT
+iptables -t filter -A INPUT -p udp --dport 53 -j ACCEPT
+iptables -t filter -A INPUT -p udp --dport 161 -j ACCEPT
+iptables -t filter -A INPUT -p tcp --dport 20:21 -j ACCEPT
+
+iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+
+iptables -t filter -A FORWARD -p icmp -d 200.221.2.45 -j ACCEPT
+iptables -t filter -A FORWARD -p icmp -s 200.221.2.45 -j ACCEPT
+
+iptables -t filter -A FORWARD -p icmp --icmp-type echo-request -d 172.16.3.254 $
+iptables -t filter -A FORWARD -p icmp --icmp-type echo-reply -s 172.16.3.254 -j$
+
+iptables -t filter -A FORWARD -i eth0 -o eth1 -p tcp --dport 80 -j ACCEPT
+iptables -t filter -A FORWARD -i eth1 -o eth0 -p tcp --sport 80 -j ACCEPT
+
+iptables -t filter -A FORWARD -i eth0 -o eth1 -p tcp --dport 443 -j ACCEPT
+iptables -t filter -A FORWARD -i eth1 -o eth0 -p tcp --sport 443 -j ACCEPT
+
+#iptables -t filter -A FORWARD -i eth0 -o eth1 -p udp -d 8.8.8.8 -j ACCEPT
+#iptables -t filter -A FORWARD -i eth1 -o eth0 -p udp -s 8.8.8.8 -j ACCEPT
