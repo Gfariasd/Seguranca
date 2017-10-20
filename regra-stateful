@@ -11,9 +11,9 @@ iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
 #iptables -t filter -P FORWARD DROP
 #iptables -t filter -P OUTPUT DROP
 
-iptables -t filter -A INPUT -M STATE --state RELATED,ESTABLISHED -j accept
-iptables -t filter -A OUTPUT -M STATE --state RELATED,ESTABLISHED -j accept
-iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j accept
+iptables -t filter -A INPUT -M STATE --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t filter -A OUTPUT -M STATE --state RELATED,ESTABLISHED -j ACCEPT
+iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j ACCEPT
 
 ############################Regra##########################
 
