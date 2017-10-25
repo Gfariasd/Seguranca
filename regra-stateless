@@ -76,6 +76,9 @@ iptables -t filter -P OUTPUT DROP
  #Registrar em log qualquer acesso da rede interna que não seja de navegação.
   iptables -t filter -A FORWARD -i eth0 !-p tcp -m --dport 88,443 -j LOG
   
+  #Servidor acesso total na rede
+   iptables -t filter -A OUTPUT -o eth0 -j ACCEPT
+  
   #Regras NAT
   
   #A saida da porta 25 será pelo IP 172.16.2.52
