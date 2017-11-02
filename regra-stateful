@@ -6,11 +6,6 @@ iptables -t mangle -F
 echo 1 > /proc/sys/net/ipv4/ip_forward
 iptables -t nat -A POSTROUTING -o eth1 -j MASQUERADE
 
-#Bloquear todas as cadeias.(Sem Uso)
-#iptables -t filter -P INPUT DROP
-#iptables -t filter -P FORWARD DROP
-#iptables -t filter -P OUTPUT DROP
-
 iptables -t filter -A INPUT -M STATE --state RELATED,ESTABLISHED -j ACCEPT
 iptables -t filter -A OUTPUT -M STATE --state RELATED,ESTABLISHED -j ACCEPT
 iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j ACCEPT
@@ -19,16 +14,16 @@ iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j ACCEPT
 
 #liberar acesso da rede interna apenas por ssh,http,dns,snmp,ping e ftp
   #liberando acesso via ssh para o servidor.
-  iptables -t filter -A INPUT -i eth0 -m state new -p tcp --dport 222 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0 -m state NEW -p tcp --dport 222 -j ACCEPT
   
   #Liberando o acesso http da rede interna para o servidor.
-  iptables -t filter -A INPUT -i eth0 -m state new -p tcp --dport 80 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0 -m state NEW -p tcp --dport 80 -j ACCEPT
   
   #Liberar a rede interna requisitar dns para o servidor.
-  iptables -t filter -A INPUT -i eth0 -m state new -p udp --dport 53 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0 -m state NEW -p udp --dport 53 -j ACCEPT
 
   #liberando a rede interna acessar o servidor via snmp.
-  iptables -t filter -A INPUT -i eth0 -m state new -p udp --dport 161 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0 -m state NEW -p udp --dport 161 -j ACCEPT
 
   #Liberando o servidor fazer requisitos icmp.
   iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
@@ -36,19 +31,18 @@ iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j ACCEPT
   iptables -t filter -A INPUT -i eth0 -p icmp --icmp-type echo-reply -j ACCEPT
 
   #liberando ftp da rede interna para o servidor.
-  iptables -t filter -A INPUT -i eth0 -m state new multiport -p tcp --dport 20,21 -j ACCEPT
+  iptables -t filter -A INPUT -i eth0 -m state NEW multiport -p tcp --dport 20,21 -j ACCEPT
 
 #Liberar a rede interna para navegação via http's.(Http=80|Https=443)
   #Liberando http's para rede interna.
-  iptables -t filter -A FORWARD -i eth0 -m state new multiport -p tcp --dport 80,443 -j ACCEPT
+  iptables -t filter -A FORWARD -i eth0 -m state NEW multiport -p tcp --dport 80,443 -j ACCEPT
   
 #Liberando resolução de nomes apenas pelo dns publico da google.
-  iptables -t filter -A FORWAR -i eth0 -m state new -p udp --dport 53 -j ACCEPT
+  iptables -t filter -A FORWARD -i eth0 -m state NEW -p udp --dport 53 -j ACCEPT
 
 #Permitir ping apenas para ip da Uol e gateway do Senac.
   #Ip da Uol
   iptables -t filter -A FORWARD -p icmp --icmp-type echo-request -d 200.221.2.45 -j ACCEPT
-  iptables -t filter -A FORWARD -p icmp --icmp-type echo-reply -s 200.221.2.45 -j ACCEPT
   
   #Gateway do SENAC.
   iptables -t filter -A FORWARD -p icmp --icmp-type echo-request -d 172.16.3.254 -j ACCEPT
