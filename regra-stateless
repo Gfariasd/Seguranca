@@ -82,5 +82,14 @@ iptables -t filter -P OUTPUT DROP
   #Regras NAT
   
   #A saida da porta 25 será pelo IP 172.16.2.52
-  iptables -t nat -A  PREROUTING -i eth0 -p tcp --dport 25
+  iptables -t nat -A POSTROUTING -p tcp --dport 25 -o eth1 -j SNAT --to 172.16.2.52
+ 
+ #Uma estação específica da rede saia pelo IP 172.16.2.51
+  iptables -t nat -A POSTROUTING -s 10.30.10.54 -j SNAT --to 172.16.2.51
+  
+  Todo tráfego que chegar no IP 172.16.2.51 caia na máquina acima.
+  iptables -t nat -A PREROUTING 
+
+
+  
   
