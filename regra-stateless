@@ -81,15 +81,20 @@ iptables -t filter -P OUTPUT DROP
   
   #Regras NAT
   
-  #A saida da porta 25 será pelo IP 172.16.2.52
+ #A saida da porta 25 será pelo IP 172.16.2.52
   iptables -t nat -A POSTROUTING -p tcp --dport 25 -o eth1 -j SNAT --to 172.16.2.52
  
- #Uma estação específica da rede saia pelo IP 172.16.2.51
+#Uma estação específica da rede saia pelo IP 172.16.2.51
   iptables -t nat -A POSTROUTING -s 10.30.10.54 -j SNAT --to 172.16.2.51
   
-  Todo tráfego que chegar no IP 172.16.2.51 caia na máquina acima.
-  iptables -t nat -A PREROUTING 
-
-
+#Todo tráfego que chegar no IP 172.16.2.51 caia na máquina acima.
+  iptables -t nat -A POSTROUTING -s 172.16.2.51 -j SNAT --to 10.30.10.54
+#Apontar portas 80, 443, 20 e 21 para servidor web, entrando pelo IP 172.16.2.50
+  iptables -t nat -A POSTROUTING -i eth1 -p tcp -m multiport --dport  443,80,21,20 -j SNAT 10.30.10.50
+  
+ #Proxy transparente das portas 80, 8080, 1080, 3128 e 443 para próprio servidor na porta 3128
+ iptables -t nat -A PREROUTING -i eth0 -p tcp -m multiport --dport 8080,3128,1080,443,80 -j SNAT --to-port 3128 
+ 
+ #Apontar porta 3389 para servidor de TS, entrando pelo 3º IP na porta 5000
   
   
