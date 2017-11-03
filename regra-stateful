@@ -53,12 +53,10 @@ iptables -t filter -A FORWARD -M STATE --state RELATED,ESTABLISHED -j ACCEPT
   
 #Permitir o servidor firewall acesse web, pingue no gateway do Senac e tenha acesso total a qualquer maquina interna. 
   #Permitindo o servidor Acessar Web (http, https e dns)
-  iptables -t filter -A INPUT  -i eth1 -o eth1 -p tcp -m multiport --dport 80,443 -j ACCEPT
-  iptables -t filter -A OUTPUT -i eth1 -o eth1 -p tcp -m multiport --sport 80,443 -j ACCEPT
+  iptables -t filter -A INPUT  -i eth1 -o eth1 -p tcp -m state NEW multiport  --dport 80,443 -j ACCEPT
  
   #Permitindo o servidor pingar para o gateway do senac.
-  iptables -t filter -A OUTPUT -p icmp --icmp-type echo-request -d 172.16.3.254 -j ACCEPT
-  iptables -t filter -A INPUT -p icmp --icmp-type echo-reply -s 172.16.3.254 -j ACCEPT
+  iptables -t filter -A OUTPUT -m state NEW -p icmp --icmp-type echo-request -d 172.16.3.254 -j ACCEPT
   
   #Permitindo o servidor tenha acesso total a qualquer maquina interna.
   iptables -t filter -A OUTPUT -o eth0 -j ACCEPT
